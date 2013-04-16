@@ -293,7 +293,7 @@
 .feature-america-football-12,
 .feature-alcohol-shop-12,
 .feature-airport-12,
-.feature-airfield-12{background-image:url('../img/feature-icons.png');background-repeat:no-repeat}
+.feature-airfield-12{background-image:url('img/feature-icons.png');background-repeat:no-repeat}
 .feature-waterway-stream{background-position:0px 0px;width:60px;height:60px;}
 .feature-waterway-river{background-position:-60px 0px;width:60px;height:60px;}
 .feature-waterway-ditch{background-position:0px -60px;width:60px;height:60px;}

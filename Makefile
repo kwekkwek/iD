@@ -6,9 +6,9 @@ JS_COMPILER = $(UGLIFY)
 LOCALE ?= en_US
 
 all: \
-	iD.js \
-	iD.min.js \
-	iD.css
+	dist/iD.js \
+	dist/iD.min.js \
+	dist/iD.css
 
 DATA_FILES = $(shell find data -type f -name '*.json' -o -name '*.md')
 data/data.js: $(DATA_FILES)
@@ -17,7 +17,7 @@ data/data.js: $(DATA_FILES)
 data/locales/en.js: data/core.yaml data/presets.yaml
 	node build.js
 
-iD.js: \
+dist/iD.js: \
 	js/lib/bootstrap-tooltip.js \
 	js/lib/d3.v3.js \
 	js/lib/d3.combobox.js \
@@ -66,21 +66,21 @@ iD.js: \
 	data/introGraph.js \
 	data/locales.js
 
-.INTERMEDIATE iD.js: data/data.js
+.INTERMEDIATE dist/iD.js: data/data.js
 
-iD.js: node_modules/.install Makefile
+dist/iD.js: node_modules/.install Makefile
 	@rm -f $@
 	cat $(filter %.js,$^) > $@
 
-iD.css: css/*.css
+dist/iD.min.js: dist/iD.js Makefile
+	@rm -f $@
+	$(JS_COMPILER) $< -c -m -o $@
+
+dist/iD.css: css/*.css
 	cat css/reset.css css/map.css css/app.css css/feature-icons.css > $@
 
 node_modules/.install: package.json
 	npm install && touch node_modules/.install
-
-%.min.js: %.js Makefile
-	@rm -f $@
-	$(JS_COMPILER) $< -c -m -o $@
 
 install_root ?= build
 install: all
