@@ -6,19 +6,19 @@ JS_COMPILER = $(UGLIFY)
 LOCALE ?= en_US
 
 all: \
-	iD.js \
-	iD.min.js \
-	img/line-presets.png \
-	iD.css
+	dist/iD.js \
+	dist/iD.min.js \
+	dist/img/line-presets.png \
+	dist/iD.css
 
 DATA_FILES = $(shell find data -type f -name '*.json' -o -name '*.md')
-data/data.js: $(DATA_FILES) img/maki-sprite.png
+data/data.js: $(DATA_FILES) dist/img/maki-sprite.png
 	node build.js
 
 data/locales/en.js: data/core.yaml data/presets.yaml
 	node build.js
 
-iD.js: \
+dist/iD.js: \
 	js/lib/bootstrap-tooltip.js \
 	js/lib/d3.v3.js \
 	js/lib/d3.combobox.js \
@@ -66,21 +66,21 @@ iD.js: \
 	data/introGraph.js \
 	data/locales.js
 
-.INTERMEDIATE iD.js: data/data.js
+.INTERMEDIATE dist/iD.js: data/data.js
 
-iD.js: node_modules/.install Makefile
+dist/iD.js: node_modules/.install Makefile
 	@rm -f $@
 	cat $(filter %.js,$^) > $@
 
-iD.css: css/*.css
+dist/iD.min.js: dist/iD.js Makefile
+	@rm -f $@
+	$(JS_COMPILER) $< -c -m -o $@
+
+dist/iD.css: css/*.css
 	cat css/reset.css css/map.css css/app.css css/line-presets.css css/maki-sprite.css > $@
 
 node_modules/.install: package.json
 	npm install && touch node_modules/.install
-
-%.min.js: %.js Makefile
-	@rm -f $@
-	$(JS_COMPILER) $< -c -m -o $@
 
 install_root ?= build
 install: all
@@ -99,12 +99,12 @@ translations:
 data/locales.js: data/locales/*.js
 	cat $^ > $@
 
-SPRITE = inkscape --export-area-page --export-png=img/line-presets.png svg/line-presets.svg
+SPRITE = inkscape --export-area-page --export-png=dist/img/line-presets.png svg/line-presets.svg
 
-img/line-presets.png: svg/line-presets.svg
+dist/img/line-presets.png: svg/line-presets.svg
 	if [ `which inkscape` ]; then $(SPRITE); else echo "Inkscape is not installed"; fi;
 
-img/maki-sprite.png: $(wildcard node_modules/maki/renders/*.png)
+dist/img/maki-sprite.png: $(wildcard node_modules/maki/renders/*.png)
 	node data/maki_sprite
 
 D3_FILES = \
